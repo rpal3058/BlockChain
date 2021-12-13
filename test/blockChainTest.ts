@@ -1,9 +1,10 @@
-import BlockChain from '../block_chain'
-import Block from '../block'
+import BlockChain from '../blockchain/block_chain'
+import Block from '../blockchain/block'
 import chai from 'chai' 
 const expect = chai.expect
 import 'mocha'
 import { SHA256 } from 'crypto-js'
+import {DIFFICULTY}  from '../config'
 
 describe("Mined block validator", () => {
     let bc_1:BlockChain
@@ -55,8 +56,8 @@ describe("Mined block validator", () => {
     it("should check if the chain is getting replaced when a new valid longer chain comes in",()=>{
         bc_2.addBlock('Test_1')    
         let temp:any 
-        temp = bc_1.replaceChain(bc_2.chain)
-        expect(temp.toString()).to.be.equal(bc_2.chain.toString())
+        bc_1.replaceChain(bc_2.chain)
+        expect(bc_1.chain.toString()).to.be.equal(bc_2.chain.toString())
     })
 
     it("should check if the test fails when a shorter new chain is passed",()=>{
@@ -73,5 +74,23 @@ describe("Mined block validator", () => {
         let temp:any 
         temp = bc_1.replaceChain(bc_2.chain)
         expect(temp).to.be.equal(false)
+    })
+
+    it("should check if the nonce value can generate hash matching the difficulty level", ()=>{
+        bc_1.addBlock('Test 2')
+        let hash = Block.hashGeneratorFromBlock(bc_1.chain[1]).substring(0,DIFFICULTY)
+        expect(hash).to.be.equal(("0").repeat(DIFFICULTY))      
+    })
+
+    it("should reduce the diffculty if takes more than the set TIMER",()=>{
+       bc_1.addBlock('Test 1')
+       let difficulty = Block.adjustDifficulty(bc_1.chain[1],(bc_1.chain[1].timeStamp+36000))
+       expect(difficulty).to.be.equal(bc_1.chain[1].difficulty-1)
+    })
+
+    it("should increase the diffculty if takes less than the set TIMER",()=>{
+       bc_1.addBlock('Test 2')
+       let difficulty = Block.adjustDifficulty(bc_1.chain[1],(bc_1.chain[1].timeStamp-36000))
+       expect(difficulty).to.be.equal(bc_1.chain[1].difficulty+1)
     })
 })

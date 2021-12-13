@@ -17,6 +17,7 @@ export default class P2pServer{
 
     constructor(_bc: BlockChain){
         this.bc = _bc 
+        this.peers =[]
     }
     
     /*
@@ -32,7 +33,14 @@ export default class P2pServer{
         let server = new Server({port: +(P2P_port)}, ()=> console.log("Backend : new node at port " + P2P_port))
 
         //connecting to clients whose connections were opened in function ()
-        server.on("connection",(peersToServerSocket)=>{         
+        server.on("connection",(peersToServerSocket)=>{  
+            /*
+            The array below stores all the peers connected to this server
+            so if a new server is created at 3000 and connections are extablished to 3001 & 3002
+            this array will store 3001 and 3002 like
+            3000 = [3001,3002]
+            */ 
+            this.peers.push(peersToServerSocket)
             this.interact(peersToServerSocket)
         })
     }
@@ -42,7 +50,16 @@ export default class P2pServer{
             let _seperateInstanceOfPeerServers = new WebSocket(peerServer)
             _seperateInstanceOfPeerServers.on('open',()=>{          
                 console.log("Opening connections with peers")  
-                this.interact(_seperateInstanceOfPeerServers) 
+                /*
+                The array below stores all the OTHER peers connected to this peers currently open by the For Each Loop
+                so if there are 2 peers mentioned while launching 3000 lets say 3001 and 3002 
+                then 2 seperate arrays will be created one each for 3001 and 3002 and details of the other peers connected will be
+                stored in each array like
+                3001 = [3002,3000]
+                3002 = [3001,3000]                
+                */ 
+                this.peers.push(_seperateInstanceOfPeerServers) 
+                this.interact(_seperateInstanceOfPeerServers) //
             })
         })
     }
@@ -64,16 +81,14 @@ export default class P2pServer{
             //IMP NOTE : here is this.bc refers to the blocks of the peer receiving the message
             let data : BlockChain
             data = JSON.parse(message)
-            let temp = this.bc.replaceChain(data.chain)
-            console.log(this.bc)
+            this.bc.replaceChain(data.chain)
         })
     }
     /*************************************** */
 
     syncData(_chain:any){
-        console.log(this.peers.length)
         this.peers.forEach((peers:any) => {
-            this.sendMessage(peers)
+            this.interact(peers)
         });
     }
 

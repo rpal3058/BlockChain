@@ -1,4 +1,4 @@
-import Block from '../block'
+import Block from '..//blockchain/block'
 import chai from 'chai' 
 const expect = chai.expect
 import 'mocha'

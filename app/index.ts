@@ -22,7 +22,7 @@ app.get( "/block", ( req, res ) => {
 //add a new block and communicate the block to the network
 app.post("/mine",(req,res)=>{
     let block = newChain.addBlock(req.body.data)
- //   newP2P_network.syncData(newChain.chain)
+    newP2P_network.syncData(newChain.chain)
     res.redirect("/block")
     // newP2P_network.server()
 })

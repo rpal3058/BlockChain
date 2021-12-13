@@ -1,0 +1,6 @@
+let DIFFICULTY:number 
+let TIMER:number
+DIFFICULTY= 3
+TIMER=6000
+
+export {DIFFICULTY,TIMER}

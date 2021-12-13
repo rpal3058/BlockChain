@@ -13,13 +13,10 @@ export default class BlockChain{
         let lastBlock = this.chain[this.chain.length-1]
         let newBlock =  Block.mineBlock(lastBlock,_data)
         this.chain.push(newBlock)
-
         return newBlock
     }
 
-    validateChain(_chain:any) //the input condition is being added here because it helps in P2P server file where the function doesnt get triggered because of difference of format between "this" ad=nd the input i.e "Chain"
-    {
-
+    validateChain(_chain:any){ //the input condition is being added here because it helps in P2P server file where the function doesnt get triggered because of difference of format between "this" ad=nd the input i.e "Chain"
         //validating the genesis block of the new chain is a valid geneis block
         if(_chain[0].hash!==Block.genesisBlock().hash) return false
     
@@ -28,8 +25,9 @@ export default class BlockChain{
         if(i>=1 && (_chain[i].lastHash!==_chain[i-1].hash)) return false        
         
         //Validating the hash of new block matches with our own generated hash. This is make sure that new block has not been tampereed with
-        if(i>=1 && (_chain[i].hash!==Block.hashGenerator(_chain[i]))) return false 
-
+        if(i>=1 && (_chain[i].hash!==Block.hashGeneratorFromBlock(_chain[i]))) {
+            return false 
+        }
         return true    
     }
 
@@ -49,6 +47,10 @@ export default class BlockChain{
         console.log("replacing the chain with the new one")
         this.chain = _chain
         return this.chain    
+    }
+
+    transactionPool(){
+        
     }
 }
 
