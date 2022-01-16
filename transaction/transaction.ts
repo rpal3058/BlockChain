@@ -1,11 +1,12 @@
-import crypto, {generateKeyPair} from 'crypto';
-import TransactionPool from './transactionPool';
 import Wallet from './wallet';
+import Chain_Utils from '../chainUtils';
 
 export default class TransactionReceipt{
-    input: Object
+    id: any
+    input: any
     output: Array<any>
     constructor(){
+        this.id = Chain_Utils.uniquId() 
         this.input={}
         this.output=[]
     }
@@ -18,17 +19,19 @@ export default class TransactionReceipt{
         )            
     }
 
-    static createNewTransactionReceipt(sender:Wallet, recipient: Wallet, amountToTransfer: any,signature: any){
+    static createNewTransactionReceipt(sender:Wallet, recipientAddress: any, amountToTransfer: any,signature: any){
         const transaction = new TransactionReceipt() //creating a new instance of class so that we cna access the input and output variable 
+        
         transaction.input = {
             timeStamp: Date.now(),
             senderBalance: sender.balance,
             transactionSignatureFromSender: signature
         }
-        transaction.output.push(
-            {amount:amountToTransfer,address:recipient},
-            {amount:sender.balance-amountToTransfer, address:sender}
-        )
-        return transaction
+        transaction.output.push(...[
+            {wallet:"receiver",amount:amountToTransfer,address:recipientAddress},
+            {wallet:"sender",amount:sender.balance-amountToTransfer, address:sender.publicKey}
+        ])
+
+        return {id:transaction.id, input: transaction.input, output: transaction.output}
     }
 }

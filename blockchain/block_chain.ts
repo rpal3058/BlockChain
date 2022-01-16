@@ -9,7 +9,7 @@ export default class BlockChain{
         this.chain = [Block.genesisBlock()]
     }
 
-    addBlock(_data:string){
+    addBlock(_data:any){
         let lastBlock = this.chain[this.chain.length-1]
         let newBlock =  Block.mineBlock(lastBlock,_data)
         this.chain.push(newBlock)
@@ -49,8 +49,5 @@ export default class BlockChain{
         return this.chain    
     }
 
-    transactionPool(){
-        
-    }
 }
 
