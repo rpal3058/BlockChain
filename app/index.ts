@@ -44,6 +44,7 @@ app.post("/mine",(req,res)=>{
     if(newP2P_network.wallet.pool.transactionPool!=null){
         let pool = req.body.tx
         let success = newP2P_network.miner.mineTransaction(pool)
+
         if(success){
             newP2P_network.syncData("chain")
             newP2P_network.syncData("clear", pool)  

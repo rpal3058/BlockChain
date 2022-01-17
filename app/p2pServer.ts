@@ -75,6 +75,7 @@ export default  class P2pServer{
                     data:this.bc,
                 }))
                 break
+
         //IMP NOTE : here this.pool refer to the blockchain of the port who is initiating the GET or POST operation
             case("transaction"):
                 allPeers.send(JSON.stringify({
@@ -82,14 +83,18 @@ export default  class P2pServer{
                     data: this.pool,
                 }))
                 break
+
             case("clear"):
+                let remove = data;
+
+                let arr = this.pool.transactionPool
+                for (var i = remove.length -1; i >= 0; i--)
+                    arr.splice(remove[i], 1);
+
                 allPeers.send(JSON.stringify({
                     type: dataType,
-                    list: data
+                    data: this.pool
                 }))
-                data.forEach((element: any) => {
-                    this.pool.transactionPool.splice(element,1)
-                });
                 break    
         }
     }
@@ -104,19 +109,13 @@ export default  class P2pServer{
                 break
                     
                 case("transaction"):
-                //IMP NOTE : here this.pool refers to the pool of the PEERS of the port initiating the GET or POST operation
-                this.pool.transactionPool.length=0  
-                let arr = input.data.transactionPool
-                arr.forEach((element:any) => {
-                    this.pool.addToPool(element)
-                })
+                //IMP NOTE : here this.pool refers to the pool of the PEERS of the port initiating the GET or POST operation 
+                this.pool.transactionPool=input.data.transactionPool
                 break
 
                 case("clear"):
                 //IMP NOTE : here this.pool refers to the pool of the PEERS of the port initiating the GET or POST operation
-                input.list.forEach((element: any) => {
-                    this.pool.transactionPool.splice(element,1)
-                });
+                this.pool.transactionPool=input.data.transactionPool
                 break
             }
         })
