@@ -12,7 +12,6 @@ export default class Miners{
         this.chain = _chain
         this.miner = _minerWallet
     }
-
     
     mineTransaction(transactionSelected: Array<number>){
         let array = this.createListToMine(transactionSelected)
@@ -28,12 +27,9 @@ export default class Miners{
             let tx = this.pool.transactionPool[txSelected]
             txArray.push(tx)
         })
-
-            // for (let outputs of tx.output){
-            //     Wallet.updateBalance(outputs)
-            // }
-
         return txArray
     }
+
+    
 
 }  

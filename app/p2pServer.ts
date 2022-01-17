@@ -74,6 +74,7 @@ export default  class P2pServer{
                     type:dataType,
                     data:this.bc,
                 }))
+                this.wallet.balance=Wallet.updateBalance(this.wallet,this.pool.transactionPool)
                 break
 
         //IMP NOTE : here this.pool refer to the blockchain of the port who is initiating the GET or POST operation
@@ -106,6 +107,7 @@ export default  class P2pServer{
                 case("chain"):
                 //IMP NOTE : here this.bc refers to the blockchain of the PEERS of the port initiating the GET or POST operation
                 this.bc.replaceChain(input.data.chain)
+                this.wallet.balance=Wallet.updateBalance(this.wallet, this.pool.transactionPool)
                 break
                     
                 case("transaction"):

@@ -40,15 +40,18 @@ export default class Wallet{
         }   
     }
 
-    // static updateBalance(walletToBeUpdated: any){
-    //     allPeer.map((peer:any) =>{
-    //         if(walletToBeUpdated.wallet=="sender" && walletToBeUpdated.address==peer.wallet.publicKey){
-    //             peer.wallet.balance = walletToBeUpdated.amount
-    //         }else if(walletToBeUpdated.wallet=="receiver" && walletToBeUpdated.address==peer.wallet.publicKey){
-    //             peer.wallet.balance += walletToBeUpdated.amount
-    //         }
-    //     })
-    // }   
+    static updateBalance(walletToBeUpdated: any, _pool:any){
+        _pool.forEach((_pool:any) =>{
+            _pool.output.map((tx:any) => {
+                if(tx.wallet=="sender" && walletToBeUpdated.publicKey==tx.address){
+                    walletToBeUpdated.balance = tx.amount
+                } else if(tx.wallet=="receiver" && walletToBeUpdated.publicKey==tx.address){
+                    walletToBeUpdated.balance += tx.amount
+                }                
+            })
+        })
+        return walletToBeUpdated.balance
+    }   
 
     signTransaction(recipient: any,amount: number){
         let data = Chain_Utils.encodeSHA256(this, recipient, amount)
