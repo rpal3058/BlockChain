@@ -1,9 +1,6 @@
-import BlockChain from "./blockchain/block_chain";
+import Wallet from "./transaction/wallet";
 runTest()
 function runTest(){
-    let bc:BlockChain
-    bc = new BlockChain
-    for(let i=0; i<10; i++){
-        console.log(bc.addBlock(`Test ${i}`).toString())
-    }
+    let wallet = new Wallet()
+    console.log(wallet.toString())
 }
