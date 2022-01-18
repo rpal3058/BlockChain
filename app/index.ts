@@ -33,8 +33,8 @@ app.get("/wallet-details",(req,res)=>{
 
 app.post("/send",(req,res)=>{
     let senderWallet = newP2P_network.wallet
-    const {recipient, amount} = req.body
-    senderWallet.sendTransaction(recipient, amount)
+    const {recipient, amount,award} = req.body
+    senderWallet.sendTransaction(recipient, amount,award)
     newP2P_network.syncData("transaction")
     res.redirect("/wallet-details")
 })
@@ -42,18 +42,12 @@ app.post("/send",(req,res)=>{
 //add a new block and communicate the block to the network
 app.post("/mine",(req,res)=>{
     if(newP2P_network.wallet.pool.transactionPool!=null){
-        let pool = req.body.tx
-        let success = newP2P_network.miner.mineTransaction(pool)
-
-        if(success){
-            newP2P_network.syncData("chain")
-            newP2P_network.syncData("clear", pool)  
-            res.redirect("/block")             
-        }else{
-            console.log("Error : Selected node couldnt mine")
-        }
+        let tx = req.body.tx
+        newP2P_network.syncData("chain", tx)
+        newP2P_network.syncData("clear", tx)  
+        res.redirect("/block")             
     }else{
-    console.log("Error : Selected node couldnt mine")
+        console.log("Error : Selected node couldnt mine")
     }    
 })
 

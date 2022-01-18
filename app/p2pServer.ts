@@ -13,13 +13,11 @@ export default  class P2pServer{
     peers:any
     wallet: Wallet
     pool: TransactionPool
-    miner: Miners
     constructor(_bc: BlockChain, _pool:TransactionPool){
         this.bc = _bc 
         this.peers =[]
         this.pool = _pool
         this.wallet=new Wallet(_pool,_bc)
-        this.miner= new Miners(this.pool, this.wallet, this.bc)
     }
 
     launchingServer(){   
@@ -70,6 +68,7 @@ export default  class P2pServer{
         //IMP NOTE : here this.bc refer to the blockchain of the port who is initiating the GET or POST operation
         switch(dataType){
             case("chain"):
+                Miners.mineTransaction(data,this.pool, this.wallet, this.bc) 
                 allPeers.send(JSON.stringify({
                     type:dataType,
                     data:this.bc,

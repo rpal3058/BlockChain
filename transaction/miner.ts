@@ -4,32 +4,25 @@ import Wallet from './wallet'
 
 
 export default class Miners{
-    pool: TransactionPool
-    miner: Wallet
-    chain : BlockChain
-    constructor(_pool: TransactionPool, _minerWallet: Wallet, _chain: BlockChain){
-        this.pool = _pool
-        this.chain = _chain
-        this.miner = _minerWallet
-    }
-    
-    mineTransaction(transactionSelected: Array<number>){
-        let array = this.createListToMine(transactionSelected)
-        this.chain.addBlock(array)
+
+    static mineTransaction(transactionSelected: Array<number>,_pool: TransactionPool, _miner: Wallet, _chain: BlockChain){
+        let array = Miners.createListToMine(transactionSelected,_pool, _miner)
+        _chain.addBlock(array)
         return true
     }
 
-    createListToMine(transactionSelected: Array<number>){
+    static createListToMine(transactionSelected: Array<number>, _pool: TransactionPool, _miner: Wallet){
         let txArray : Array<any>
         txArray = []        
         
+        
         transactionSelected.forEach((txSelected: any)=>{
-            let tx = this.pool.transactionPool[txSelected]
+            let tx = _pool.transactionPool[txSelected]
             txArray.push(tx)
+            _miner.balance+=_pool.transactionPool[txSelected].output[2].amount //adding the award amount to miners wallet
         })
+
         return txArray
     }
-
-    
 
 }  
