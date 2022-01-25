@@ -68,12 +68,11 @@ export default  class P2pServer{
         //IMP NOTE : here this.bc refer to the blockchain of the port who is initiating the GET or POST operation
         switch(dataType){
             case("chain"):
-                Miners.mineTransaction(data,this.pool, this.wallet, this.bc) 
                 allPeers.send(JSON.stringify({
                     type:dataType,
                     data:this.bc,
                 }))
-                this.wallet.balance=Wallet.updateBalance(this.wallet,this.pool.transactionPool)
+         //       this.wallet.balance=Wallet.updateBalance(this.wallet,this.pool.transactionPool)
                 break
 
         //IMP NOTE : here this.pool refer to the blockchain of the port who is initiating the GET or POST operation
