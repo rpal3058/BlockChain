@@ -30,7 +30,7 @@ export default class Wallet{
         let tempBalance = this.checkBalanceInPool()
         if(tempBalance > amountToTransfer+awardAmount){
             let signature  = this.signTransaction(recipientAddress,amountToTransfer)
-            let transaction = TransactionReceipt.createNewTransactionReceipt(this,recipientAddress,amountToTransfer,awardAmount,signature)
+            let transaction = TransactionReceipt.createNewTransactionReceipt(this, recipientAddress,amountToTransfer,awardAmount,signature)
             let verificiation = this.pool.verify(this,recipientAddress,amountToTransfer,signature)
             if(verificiation){
                 this.pool.addToPool(transaction)               
@@ -46,20 +46,21 @@ export default class Wallet{
         let balance=this.balance
         this.pool.transactionPool.forEach((tx:any) => {
             if(tx.output[0].address===this.publicKey){
-                balance -= tx.output[0].amount
+                balance -= (tx.output[1].amount+tx.output[2].amount)
             }else if(tx.output[1].address===this.publicKey){
                 balance += tx.output[1].amount
             }else if(tx.output[2].address===this.publicKey){
                 balance += tx.output[2].amount
             }
         });
+        console.log(balance)
         return balance
     }
 
     static updateBalance(walletToBeUpdated: any, _pool:any){
         _pool.forEach((tx:any) =>{
             if(tx.output[0].address===walletToBeUpdated.publicKey){
-                walletToBeUpdated.balance -= tx.output[0].amount
+                walletToBeUpdated.balance = tx.output[0].amount
             }else if(tx.output[1].address===walletToBeUpdated.publicKey){
                 walletToBeUpdated.balance += tx.output[1].amount
             }
