@@ -28,7 +28,7 @@ export default class TransactionReceipt{
             transactionSignatureFromSender: signature
         }
         transaction.output.push(...[
-            {wallet:"sender",amount:amountToTransfer+awardAmount, address:sender.publicKey},
+            {wallet:"sender",amount:sender.balance-amountToTransfer-awardAmount, address:sender.publicKey},
             {wallet:"receiver",amount:amountToTransfer,address:recipientAddress},
             {wallet:"Miners award", amount:awardAmount}
         ])
