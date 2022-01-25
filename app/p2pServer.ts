@@ -13,13 +13,11 @@ export default  class P2pServer{
     peers:any
     wallet: Wallet
     pool: TransactionPool
-    miner: Miners
     constructor(_bc: BlockChain, _pool:TransactionPool){
         this.bc = _bc 
         this.peers =[]
         this.pool = _pool
         this.wallet=new Wallet(_pool,_bc)
-        this.miner= new Miners(this.pool, this.wallet, this.bc)
     }
 
     launchingServer(){   
@@ -74,7 +72,7 @@ export default  class P2pServer{
                     type:dataType,
                     data:this.bc,
                 }))
-                this.wallet.balance=Wallet.updateBalance(this.wallet,this.pool.transactionPool)
+         //       this.wallet.balance=Wallet.updateBalance(this.wallet,this.pool.transactionPool)
                 break
 
         //IMP NOTE : here this.pool refer to the blockchain of the port who is initiating the GET or POST operation

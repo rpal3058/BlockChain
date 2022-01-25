@@ -18,7 +18,7 @@ export default class BlockChain{
 
     validateChain(_chain:any){ //the input condition is being added here because it helps in P2P server file where the function doesnt get triggered because of difference of format between "this" ad=nd the input i.e "Chain"
         //validating the genesis block of the new chain is a valid geneis block
-        if(_chain[0].hash!==Block.genesisBlock().hash) return false
+        if(_chain[0]?.hash!==Block.genesisBlock().hash) return false
     
         let i = _chain.length-1  
         //Validating the last hash stored in the new chain is actually equal to the hash of the block before that      

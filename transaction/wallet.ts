@@ -9,6 +9,7 @@ export default class Wallet{
     publicKey : any
     pool: TransactionPool
     bc:BlockChain
+    
     constructor(_pool:TransactionPool, _bc:BlockChain){
         this.key = Chain_Utils.keyPairGenerator()
         this.publicKey = this.key.getPublic().encode('hex')
@@ -25,10 +26,11 @@ export default class Wallet{
         )
     }
     
-    sendTransaction(recipientAddress: any, amountToTransfer: number){
-        if(this.balance > amountToTransfer){
+    sendTransaction(recipientAddress: any, amountToTransfer: number,awardAmount: number){        
+        let tempBalance = this.checkBalanceInPool()
+        if(tempBalance > amountToTransfer+awardAmount){
             let signature  = this.signTransaction(recipientAddress,amountToTransfer)
-            let transaction = TransactionReceipt.createNewTransactionReceipt(this,recipientAddress,amountToTransfer,signature)
+            let transaction = TransactionReceipt.createNewTransactionReceipt(this,recipientAddress,amountToTransfer,awardAmount,signature)
             let verificiation = this.pool.verify(this,recipientAddress,amountToTransfer,signature)
             if(verificiation){
                 this.pool.addToPool(transaction)               
@@ -36,20 +38,33 @@ export default class Wallet{
                 console.log("Error: transaction could not be added to the pool")
             }
         }else{
-        console.log("Error: transaction could not be added to the pool")
+            console.log("Error: transaction could not be added to the pool. Please check the balance")
         }   
     }
 
+    checkBalanceInPool(){
+        let balance=this.balance
+        this.pool.transactionPool.forEach((tx:any) => {
+            if(tx.output[0].address===this.publicKey){
+                balance -= tx.output[0].amount
+            }else if(tx.output[1].address===this.publicKey){
+                balance += tx.output[1].amount
+            }else if(tx.output[2].address===this.publicKey){
+                balance += tx.output[2].amount
+            }
+        });
+        return balance
+    }
+
     static updateBalance(walletToBeUpdated: any, _pool:any){
-        _pool.forEach((_pool:any) =>{
-            _pool.output.map((tx:any) => {
-                if(tx.wallet=="sender" && walletToBeUpdated.publicKey==tx.address){
-                    walletToBeUpdated.balance = tx.amount
-                } else if(tx.wallet=="receiver" && walletToBeUpdated.publicKey==tx.address){
-                    walletToBeUpdated.balance += tx.amount
-                }                
-            })
+        _pool.forEach((tx:any) =>{
+            if(tx.output[0].address===walletToBeUpdated.publicKey){
+                walletToBeUpdated.balance -= tx.output[0].amount
+            }else if(tx.output[1].address===walletToBeUpdated.publicKey){
+                walletToBeUpdated.balance += tx.output[1].amount
+            }
         })
+        console.log(walletToBeUpdated.balance)
         return walletToBeUpdated.balance
     }   
 
@@ -61,61 +76,11 @@ export default class Wallet{
     
 }
 
-
-/*****************
- DUMP (Delete later):
-
-    // checkBalanceInPool(){
-    //     //calculating the balance when sending funds
-    //     let transactionArray: any
-    //     transactionArray = []
-    //     for(let transactions of this.pool.transactionPool){
-    //         transactionArray = transactions.output.filter((e:any) => (e.address===this.publicKey && e.wallet==="sender"))
-    //     }
-    //     let balanceAfterExpense = transactionArray[transactionArray.length-1]?.amount
-
-    //     //calculating the balance when receving funds funds
-    //     transactionArray.length=0
-    //     for(let transactions of this.pool.transactionPool){
-    //         transactionArray = transactions.output.filter((e:any) => (e.address===this.publicKey && e.wallet==="receiver"))
-    //     }
-
-    //     let income=0
-    //     for(let i=0; i<transactionArray.length;i++){
-    //         income = transactionArray[i].amount+income
-    //     }
-
-    //     return (Number(balanceAfterExpense)+Number(income))
-    // }
-
-
-      static updateBalance(walletToBeUpdated: any){
-        //calculating the balance when sending funds
-        let transactionArray: any
-        transactionArray = []
-        .bc.chain.forEach((blocks:any) => {
-            for(let transactions of blocks.data){
-                transactionArray = transactions.output.filter((e:any) => (e.address===this.publicKey && e.wallet==="sender"))
-            }             
-        });
-        
-        let balanceAfterExpense = transactionArray[transactionArray.length-1]?.amount
-    
-        //calculating the balance when receving funds funds
-        transactionArray.length=0
-        this.bc.chain.forEach((blocks:any) => {
-            for(let transactions of blocks.data){
-                transactionArray = transactions.output.filter((e:any) => (e.address===this.publicKey && e.wallet==="receiver"))
-            }             
-        });
-    
-        let income=0
-        for(let i=0; i<transactionArray.length;i++){
-            income = transactionArray[i].amount+income
-        }
-
-        this.balance = balanceAfterExpense + income
-    }   
-
-
-*******************/
+// _pool.output.map((tx:any) => {
+//     if(tx.wallet=="sender" && walletToBeUpdated.publicKey==tx.address){
+//         console.log(walletToBeUpdated.balance)
+//         walletToBeUpdated.balance -= tx.amount
+//     } else if(tx.wallet=="receiver" && walletToBeUpdated.publicKey==tx.address){
+//         walletToBeUpdated.balance += tx.amount
+//     }                
+// })

@@ -19,7 +19,7 @@ export default class TransactionReceipt{
         )            
     }
 
-    static createNewTransactionReceipt(sender:Wallet, recipientAddress: any, amountToTransfer: any,signature: any){
+    static createNewTransactionReceipt(sender:Wallet, recipientAddress: any, amountToTransfer: any,awardAmount: any,signature: any){
         const transaction = new TransactionReceipt() //creating a new instance of class so that we cna access the input and output variable 
         
         transaction.input = {
@@ -28,8 +28,9 @@ export default class TransactionReceipt{
             transactionSignatureFromSender: signature
         }
         transaction.output.push(...[
+            {wallet:"sender",amount:amountToTransfer+awardAmount, address:sender.publicKey},
             {wallet:"receiver",amount:amountToTransfer,address:recipientAddress},
-            {wallet:"sender",amount:sender.balance-amountToTransfer, address:sender.publicKey}
+            {wallet:"Miners award", amount:awardAmount}
         ])
 
         return {id:transaction.id, input: transaction.input, output: transaction.output}
